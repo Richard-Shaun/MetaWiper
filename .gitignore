@@ -11,6 +11,8 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 
-build
+
 cmake-build-debug-mingw
 cmake-build-debug-visual-studio
+
+test_instances

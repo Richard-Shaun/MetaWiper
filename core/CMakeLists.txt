@@ -2,7 +2,6 @@ set(LIB_NAME meta_wiper_core)
 
 find_package(PoDoFo REQUIRED)
 
-
 set(CORE_SOURCES
     # api codes
     src/meta_wiper_core.cpp
@@ -23,6 +22,8 @@ set (CORE_HEADERS
 )
 
 add_library(${LIB_NAME} SHARED ${CORE_SOURCES} ${CORE_HEADERS})
+
+target_compile_definitions(${LIB_NAME} PRIVATE META_WIPER_CORE_EXPORTS)
 
 target_compile_features(${LIB_NAME} PUBLIC cxx_std_17)
 

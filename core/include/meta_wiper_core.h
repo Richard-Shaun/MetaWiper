@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include "./base/file_handler.h"
+#include "meta_wipe_core_export.h"
 
 namespace meta_wiper_core {
 
@@ -29,7 +30,7 @@ namespace meta_wiper_core {
         std::vector<meta_item> metadata;
     };
 
-    class meta_wiper_core_class {
+    class META_WIPER_CORE_EXPORT_FLAG meta_wiper_core_class {
     public:
         meta_wiper_core_class();
         ~meta_wiper_core_class();

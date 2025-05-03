@@ -13,15 +13,15 @@ namespace meta_wiper_core {
         const file_handler::operation_type op_type,
         const file_handler::operation_options& options) {
 
-        // 检查文件是否存在
+        // Check if file exists
         if (!std::filesystem::exists(file_path)) {
-            return {false, "File does not exist: " + file_path, {}};
+            return {false, "File does not exist: " + file_path, {}, {}};
         }
 
-        // 创建合适的处理器
+        // Create appropriate handler
         auto handler = file_handler::create_handler(file_path, op_type, options);
         if (!handler) {
-            return {false, "Unsupported file format", {}};
+            return {false, "Unsupported file format", {}, {}};
         }
 
         return handler->execute_operation();
@@ -43,21 +43,21 @@ namespace meta_wiper_core {
     }
 
     std::vector<std::string> meta_wiper_core_class::get_supported_file_types() const {
-        return {".pdf"}; // 目前仅支持PDF
+        return {".pdf"}; // Currently only PDF is supported
     }
 
     bool meta_wiper_core_class::type_supported(const std::string& file_extension) const {
         std::string ext = file_extension;
 
-        // 确保扩展名以点开头
+        // Ensure extension starts with dot
         if (!ext.empty() && ext[0] != '.') {
             ext = "." + ext;
         }
 
-        // 转换为小写
+        // Convert to lowercase
         std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-        // 检查扩展名是否在支持的格式中
+        // Check if extension is in supported formats
         const auto formats = get_supported_file_types();
         return std::find(formats.begin(), formats.end(), ext) != formats.end();
     }

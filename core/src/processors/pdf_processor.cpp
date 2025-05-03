@@ -1,4 +1,6 @@
-//need to be checked
+/**
+ * need to be checked
+ */
 #include <iostream>
 #include <filesystem>
 #include <fstream>
@@ -145,7 +147,7 @@ namespace pdf_processor {
             }
 
             // 保存文档
-            pdf_document->Save(file_path.c_str(), PoDoFo::PdfSaveOptions::Clean);
+            pdf_document->Save(file_path.c_str(), PoDoFo::PdfSaveOptions::None);// to be fixed to ::Clean
 
         } catch (const PoDoFo::PdfError& e) {
             result.success = false;
