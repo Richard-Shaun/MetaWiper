@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <windows.h>
 #include <meta_wiper_core.h>
 
 /**
@@ -146,7 +147,7 @@ void test_clean_metadata(meta_wiper_core::meta_wiper_core_class& core, const std
         return;
     }
 
-    int original_metadata_count = read_result.metadata.size();
+    size_t original_metadata_count = read_result.metadata.size();
     std::cout << "Original metadata count: " << original_metadata_count << std::endl;
 
     // Now, clean the metadata
@@ -172,7 +173,7 @@ void test_clean_metadata(meta_wiper_core::meta_wiper_core_class& core, const std
         return;
     }
 
-    int cleaned_metadata_count = read_after_clean.metadata.size();
+    size_t cleaned_metadata_count = read_after_clean.metadata.size();
     std::cout << "Metadata count after cleaning: " << cleaned_metadata_count << std::endl;
 
     if (cleaned_metadata_count < original_metadata_count) {
@@ -203,6 +204,11 @@ void test_clean_metadata(meta_wiper_core::meta_wiper_core_class& core, const std
  * @return Exit code
  */
 int main(int argc, char* argv[]) {
+    #ifdef _WIN32
+        // set output to utf-8 encoding, ensure console can properly display
+        SetConsoleOutputCP(CP_UTF8);
+    #endif
+
     std::cout << "MetaWiper Core Library Test Program" << std::endl;
     std::cout << "=============================" << std::endl;
 
