@@ -1,11 +1,34 @@
+/**
+ * @file main.cpp
+ * @brief MetaWiper core library test program
+ * @details Tests basic functionality of the metadata removal library
+ */
+
 #include <iostream>
 #include <string>
 #include <filesystem>
-#include <windows.h>
+#include <thread>
+#include <chrono>
 #include <meta_wiper_core.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 /**
- * @brief Test supported file types
+ * @brief Initializes console for proper character display
+ */
+void init_console() {
+#ifdef _WIN32
+    // Set console output to UTF-8 encoding
+    SetConsoleOutputCP(CP_UTF8);
+    std::cout << "Console set to UTF-8 encoding" << std::endl;
+#endif
+}
+
+/**
+ * @brief Tests supported file types
+ *
  * @param core Meta wiper core instance
  */
 void test_supported_file_types(meta_wiper_core::meta_wiper_core_class& core) {
@@ -27,58 +50,12 @@ void test_supported_file_types(meta_wiper_core::meta_wiper_core_class& core) {
 }
 
 /**
- * @brief Create a backup of the test file
- * @param original_path Original file path
- * @return Path to the backup file, empty if failed
- */
-std::string create_test_file_backup(const std::string& original_path) {
-    try {
-        std::string backup_path = original_path + ".backup";
-        std::filesystem::copy_file(
-            original_path,
-            backup_path,
-            std::filesystem::copy_options::overwrite_existing
-        );
-        std::cout << "Created backup at: " << backup_path << std::endl;
-        return backup_path;
-    } catch (const std::exception& e) {
-        std::cerr << "Failed to create backup: " << e.what() << std::endl;
-        return "";
-    }
-}
-
-/**
- * @brief Restore the original file from backup
- * @param original_path Original file path
- * @param backup_path Backup file path
- * @return True if restore succeeded
- */
-bool restore_from_backup(const std::string& original_path, const std::string& backup_path) {
-    try {
-        if (std::filesystem::exists(backup_path)) {
-            std::filesystem::copy_file(
-                backup_path,
-                original_path,
-                std::filesystem::copy_options::overwrite_existing
-            );
-            std::cout << "Restored original file from backup" << std::endl;
-            // Optionally remove the backup
-            std::filesystem::remove(backup_path);
-            return true;
-        }
-        return false;
-    } catch (const std::exception& e) {
-        std::cerr << "Failed to restore from backup: " << e.what() << std::endl;
-        return false;
-    }
-}
-
-/**
- * @brief Check if file exists, create simple test file if necessary
+ * @brief Check if file exists
+ *
  * @param file_path File path
- * @return True if file exists or was created successfully
+ * @return True if file exists
  */
-bool check_or_create_test_file(const std::string& file_path) {
+bool check_test_file(const std::string& file_path) {
     if (std::filesystem::exists(file_path)) {
         std::cout << "Test file exists: " << file_path << std::endl;
         return true;
@@ -90,11 +67,12 @@ bool check_or_create_test_file(const std::string& file_path) {
 
 /**
  * @brief Test reading file metadata
+ *
  * @param core Meta wiper core instance
  * @param file_path PDF file path
  */
 void test_read_metadata(meta_wiper_core::meta_wiper_core_class& core, const std::string& file_path) {
-    if (!check_or_create_test_file(file_path)) {
+    if (!check_test_file(file_path)) {
         return;
     }
 
@@ -112,38 +90,56 @@ void test_read_metadata(meta_wiper_core::meta_wiper_core_class& core, const std:
         for (const auto& [key, value] : result.metadata) {
             std::cout << "  " << key << ": " << value << std::endl;
         }
+    } else if (!result.warnings.empty()) {
+        std::cout << "Warnings:" << std::endl;
+        for (const auto& warning : result.warnings) {
+            std::cout << "  " << warning << std::endl;
+        }
     }
 
     std::cout << std::endl;
 }
 
 /**
- * @brief Test cleaning file metadata
+ * @brief Test cleaning file metadata using a file copy
+ *
  * @param core Meta wiper core instance
  * @param file_path PDF file path
  */
 void test_clean_metadata(meta_wiper_core::meta_wiper_core_class& core, const std::string& file_path) {
-    if (!check_or_create_test_file(file_path)) {
+    if (!check_test_file(file_path)) {
         return;
     }
 
     std::cout << "=== Testing Clean Metadata ===" << std::endl;
-    std::cout << "File path: " << file_path << std::endl;
 
-    // Create a backup of the original file
-    std::string backup_path = create_test_file_backup(file_path);
-    if (backup_path.empty()) {
-        std::cout << "Skipping clean test due to backup failure" << std::endl;
+    // Create a test copy with proper extension
+    std::filesystem::path original_path(file_path);
+    std::filesystem::path copy_stem = original_path.stem().string() + "_copy";
+    std::filesystem::path copy_path = original_path.parent_path() / (copy_stem.string() + original_path.extension().string());
+
+    std::string test_copy = copy_path.string();
+
+    try {
+        std::filesystem::copy_file(
+            file_path,
+            test_copy,
+            std::filesystem::copy_options::overwrite_existing
+        );
+        std::cout << "Created test copy: " << test_copy << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to create test copy: " << e.what() << std::endl;
         return;
     }
 
     // First, read the original metadata
     std::cout << "Reading original metadata..." << std::endl;
-    auto read_result = core.process_file(file_path, file_handler::operation_type::READ);
+    auto read_result = core.process_file(test_copy, file_handler::operation_type::READ);
 
     if (!read_result.success) {
         std::cout << "Failed to read original metadata: " << read_result.message << std::endl;
-        restore_from_backup(file_path, backup_path);
+        // Clean up test copy
+        std::filesystem::remove(test_copy);
         return;
     }
 
@@ -152,24 +148,28 @@ void test_clean_metadata(meta_wiper_core::meta_wiper_core_class& core, const std
 
     // Now, clean the metadata
     std::cout << "Cleaning metadata..." << std::endl;
-    auto clean_result = core.process_file(file_path, file_handler::operation_type::CLEAN);
+    auto clean_result = core.process_file(test_copy, file_handler::operation_type::CLEAN);
 
     std::cout << "Clean operation result: " << (clean_result.success ? "Success" : "Failed") << std::endl;
     std::cout << "Message: " << clean_result.message << std::endl;
 
     if (!clean_result.success) {
-        std::cout << "Cleaning failed, restoring from backup..." << std::endl;
-        restore_from_backup(file_path, backup_path);
+        std::cout << "Cleaning failed, cleaning up test copy..." << std::endl;
+        std::filesystem::remove(test_copy);
         return;
     }
 
+    // Add a short delay to ensure file operations are complete
+    std::cout << "Waiting for file operations to complete..." << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
     // Read the metadata again to verify it was cleaned
     std::cout << "Reading metadata after cleaning..." << std::endl;
-    auto read_after_clean = core.process_file(file_path, file_handler::operation_type::READ);
+    auto read_after_clean = core.process_file(test_copy, file_handler::operation_type::READ);
 
     if (!read_after_clean.success) {
         std::cout << "Failed to read metadata after cleaning: " << read_after_clean.message << std::endl;
-        restore_from_backup(file_path, backup_path);
+        std::filesystem::remove(test_copy);
         return;
     }
 
@@ -190,24 +190,27 @@ void test_clean_metadata(meta_wiper_core::meta_wiper_core_class& core, const std
         }
     }
 
-    // Restore the original file from backup
-    std::cout << "Test completed, restoring original file..." << std::endl;
-    restore_from_backup(file_path, backup_path);
+    // Clean up test copy
+    try {
+        std::filesystem::remove(test_copy);
+        std::cout << "Deleted test copy" << std::endl;
+    } catch (...) {
+        std::cerr << "Failed to delete test copy" << std::endl;
+    }
 
     std::cout << std::endl;
 }
 
 /**
  * @brief Main function
+ *
  * @param argc Argument count
  * @param argv Argument vector
  * @return Exit code
  */
 int main(int argc, char* argv[]) {
-    #ifdef _WIN32
-        // set output to utf-8 encoding, ensure console can properly display
-        SetConsoleOutputCP(CP_UTF8);
-    #endif
+    // Initialize console for proper character display
+    init_console();
 
     std::cout << "MetaWiper Core Library Test Program" << std::endl;
     std::cout << "=============================" << std::endl;
@@ -232,6 +235,14 @@ int main(int argc, char* argv[]) {
             std::cout << "No file path provided, skipping file testing." << std::endl;
             return 0;
         }
+    }
+
+    // Simplify test file path
+    try {
+        test_file_path = std::filesystem::absolute(test_file_path).string();
+        std::cout << "Using file path: " << test_file_path << std::endl;
+    } catch (...) {
+        // If unable to get absolute path, continue with original path
     }
 
     // Test reading metadata
