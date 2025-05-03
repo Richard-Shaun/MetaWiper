@@ -8,6 +8,8 @@ namespace file_handler {
     file_handler_class::file_handler_class(const std::string &path, operation_type type, const operation_options& opts)
         : file_properties_class(path), type(type), options(opts) {}
 
+    file_handler_class::~file_handler_class() = default;
+
     std::unique_ptr<file_handler_class> create_handler(
         const std::string& file_path,
         operation_type op_type,

@@ -62,4 +62,4 @@ namespace meta_wiper_core {
         return std::find(formats.begin(), formats.end(), ext) != formats.end();
     }
 
-} // namespace meta_wiper
+}
