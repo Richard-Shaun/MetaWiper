@@ -26,31 +26,11 @@ namespace pdf_processor {
 
     pdf_processor_class::~pdf_processor_class() = default;
 
-    file_handler::operation_result pdf_processor_class::execute_operation() {
+    file_handler::operation_result pdf_processor_class::check_prerequisites() {
         if (!pdf_loaded) {
             return {false, "Failed to load PDF document", {}, {}};
         }
-
-        // call different operations based on the type
-        switch (type) {
-            case file_handler::operation_type::READ:
-                return read_metadata();
-
-            case file_handler::operation_type::CLEAN:
-                return clean_metadata();
-
-            case file_handler::operation_type::OVERWRITE:
-                return overwrite_metadata();
-
-            case file_handler::operation_type::EXPORT:
-                return export_metadata();
-
-            case file_handler::operation_type::RESTORE:
-                return restore_metadata();
-
-            default:
-                return {false, "Unsupported operation type", {}, {}};
-        }
+        return {true, "", {}, {}};
     }
 
     file_handler::operation_result pdf_processor_class::read_metadata() {

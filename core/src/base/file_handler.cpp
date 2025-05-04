@@ -10,6 +10,35 @@ namespace file_handler {
 
     file_handler_class::~file_handler_class() = default;
 
+    operation_result file_handler_class::execute_operation() {
+
+        auto prereq_result = check_prerequisites();
+        if (!prereq_result.success) {
+            return prereq_result;
+        }
+
+        // 根据操作类型分发到不同处理函数
+        switch (type) {
+            case operation_type::READ:
+                return read_metadata();
+
+            case operation_type::CLEAN:
+                return clean_metadata();
+
+            case operation_type::OVERWRITE:
+                return overwrite_metadata();
+
+            case operation_type::EXPORT:
+                return export_metadata();
+
+            case operation_type::RESTORE:
+                return restore_metadata();
+
+            default:
+                return {false, "Unsupported operation type", {}, {}};
+        }
+    }
+
     std::unique_ptr<file_handler_class> create_handler(
         const std::string& file_path,
         operation_type op_type,

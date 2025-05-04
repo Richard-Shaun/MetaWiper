@@ -34,10 +34,30 @@ namespace file_handler {
     protected:
         operation_type type {operation_type::READ};
         operation_options options;
+        virtual operation_result check_prerequisites() {
+            return {true, "",{}, {}};
+        }
+        virtual operation_result read_metadata() {
+            return {false, "Operation not supported", {}, {}};
+        }
+        virtual operation_result clean_metadata() {
+            return {false, "Operation not supported", {}, {}};
+        }
+        virtual operation_result overwrite_metadata() {
+            return {false, "Operation not supported", {}, {}};
+        }
+        virtual operation_result export_metadata() {
+            return {false, "Operation not supported", {}, {}};
+        }
+        virtual operation_result restore_metadata() {
+            return {false, "Operation not supported", {}, {}};
+        }
+
     public:
         file_handler_class(const std::string& path, operation_type type, const operation_options& opts);
         ~file_handler_class() override;
-        virtual operation_result execute_operation() = 0;
+        operation_result execute_operation();
+
     };
 
     /**

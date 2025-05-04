@@ -17,14 +17,14 @@ namespace pdf_processor {
                       file_handler::operation_type type,
                       const file_handler::operation_options& opts);
         ~pdf_processor_class() override;
-        file_handler::operation_result execute_operation() override;
+    protected:
+        file_handler::operation_result check_prerequisites() override;
+        file_handler::operation_result read_metadata() override;
+        file_handler::operation_result clean_metadata() override;
+        file_handler::operation_result overwrite_metadata() override;
+        file_handler::operation_result export_metadata() override;
+        file_handler::operation_result restore_metadata() override;
     private:
-        file_handler::operation_result read_metadata();
-        file_handler::operation_result clean_metadata();
-        file_handler::operation_result overwrite_metadata();
-        file_handler::operation_result export_metadata();
-        file_handler::operation_result restore_metadata();
-
         std::unique_ptr<PoDoFo::PdfMemDocument> pdf_document;
         bool pdf_loaded;
     };
