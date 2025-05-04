@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "./base/file_handler.h"
 #include "./processors/pdf_processor.h"
+#include "./processors/jpeg_processor.h"
 
 namespace file_handler {
 
@@ -52,6 +53,9 @@ namespace file_handler {
         std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
         if (extension == "pdf") {
             return std::make_unique<pdf_processor::pdf_processor_class>(file_path, op_type, options);
+        }
+        else if (extension == "jpeg" || extension == "jpg") {
+            return std::make_unique<jpeg_processor::jpeg_processor_class>(file_path, op_type, options);
         }
         return nullptr;
     }

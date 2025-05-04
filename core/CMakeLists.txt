@@ -10,6 +10,7 @@ set(CORE_SOURCES
     src/base/file_properties.cpp
     # processors codes
     src/processors/pdf_processor.cpp
+    src/processors/jpeg_processor.cpp
 )
 set (CORE_HEADERS
     # api headers
@@ -19,6 +20,7 @@ set (CORE_HEADERS
     include/base/file_properties.h
     # processors headers
     include/processors/pdf_processor.h
+    include/processors/jpeg_processor.h
 )
 
 add_library(${LIB_NAME} SHARED ${CORE_SOURCES} ${CORE_HEADERS})
@@ -39,6 +41,8 @@ target_include_directories(${LIB_NAME}
 find_package(podofo CONFIG REQUIRED)
 target_link_libraries(${LIB_NAME} PRIVATE $<IF:$<TARGET_EXISTS:podofo_shared>,podofo_shared,podofo_static>)
 
+find_package(exiv2 CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE Exiv2::exiv2lib)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${LIB_NAME} PRIVATE -Wall -Wextra)
@@ -49,12 +53,15 @@ endif()
 # 创建别名
 add_library(MetaWiper::Core ALIAS ${LIB_NAME})
 
+#[==[
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/MetaWiperCoreConfigVersion.cmake"
     VERSION 0.1.0
     COMPATIBILITY SameMajorVersion
 )
+#]==]
+
 #[==[
 # 设置安装规则
 include(GNUInstallDirs)
