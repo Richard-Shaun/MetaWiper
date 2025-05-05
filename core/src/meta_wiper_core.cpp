@@ -43,7 +43,9 @@ namespace meta_wiper_core {
     }
 
     std::vector<std::string> meta_wiper_core_class::get_supported_file_types() const {
-        return {".pdf"}; // Currently only PDF is supported
+        // Return all supported extensions
+        // In a more advanced implementation, this could query the processor_factory
+        return {".pdf", ".jpg", ".jpeg"};
     }
 
     bool meta_wiper_core_class::type_supported(const std::string& file_extension) const {

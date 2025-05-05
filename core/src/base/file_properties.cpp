@@ -94,10 +94,12 @@ namespace file_properties {
         }
     }
     void file_properties_class::init_file_type_minor() {
+
         if (file_extension == "pdf") {
-            // 需要实际分析PDF内容来确定是否是PDF/A
             // to be fixed
             file_type_minor = type_minor::PDFA;
+        }else if (file_extension == "jpeg" || file_extension == "jpg") {
+            file_type_minor = type_minor::JPEG;
         } else if (file_extension == "docx") {
             file_type_minor = type_minor::DOCX;
         } else if (file_extension == "xlsx") {

@@ -8,6 +8,7 @@ set(CORE_SOURCES
     # base codes
     src/base/file_handler.cpp
     src/base/file_properties.cpp
+    src/base/processor_factory.cpp
     # processors codes
     src/processors/pdf_processor.cpp
     src/processors/jpeg_processor.cpp
@@ -18,6 +19,7 @@ set (CORE_HEADERS
     # base headers
     include/base/file_handler.h
     include/base/file_properties.h
+    include/base/processor_factory.h
     # processors headers
     include/processors/pdf_processor.h
     include/processors/jpeg_processor.h

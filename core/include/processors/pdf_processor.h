@@ -30,3 +30,26 @@ namespace pdf_processor {
     };
 
 }
+
+
+#include "./base/processor_factory.h"
+
+namespace {
+    /**
+     * @brief Static registrar for regular PDF files
+     */
+    processor_factory::processor_registrar<
+        pdf_processor::pdf_processor_class,
+        file_properties::type_major::PDF,
+        file_properties::type_minor::UNKNOWN
+    > register_pdf_processor;
+
+    /**
+     * @brief Static registrar for PDF/A files
+     */
+    processor_factory::processor_registrar<
+        pdf_processor::pdf_processor_class,
+        file_properties::type_major::PDF,
+        file_properties::type_minor::PDFA
+    > register_pdfa_processor;
+}

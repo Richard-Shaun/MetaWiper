@@ -25,3 +25,16 @@ namespace jpeg_processor {
     };
 
 }
+
+#include "./base/processor_factory.h"
+
+namespace {
+    /**
+     * @brief Static registrar for JPEG files
+     */
+    processor_factory::processor_registrar<
+        jpeg_processor::jpeg_processor_class,
+        file_properties::type_major::JPEG,
+        file_properties::type_minor::UNKNOWN
+    > register_jpeg_processor;
+}

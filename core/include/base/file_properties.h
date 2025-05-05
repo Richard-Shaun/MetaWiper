@@ -32,7 +32,8 @@ namespace file_properties {
         PDFA,
         DOCX,
         XLSX,
-        PPTX
+        PPTX,
+        JPEG
     };
 
     class file_properties_class {
