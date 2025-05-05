@@ -1,10 +1,18 @@
 set(TEST_NAME meta_wiper_test)
 
-set(TEST_SOURCES src/main.cpp)
+add_subdirectory(common)
 
-add_executable(${TEST_NAME} ${TEST_SOURCES})
+add_subdirectory(formats/pdf)
+add_subdirectory(formats/jpeg)
 
-target_link_libraries(${TEST_NAME} PRIVATE meta_wiper_core)
+add_executable(${TEST_NAME} main.cpp)
+
+target_link_libraries(${TEST_NAME} PRIVATE
+        meta_wiper_core
+        test_utils
+        pdf_tests
+        jpeg_tests
+)
 
 target_compile_features(${TEST_NAME} PRIVATE cxx_std_17)
 
@@ -25,6 +33,10 @@ find_package(podofo CONFIG REQUIRED)
 get_target_property(PODOFO_DLL_DEBUG podofo_shared IMPORTED_LOCATION_DEBUG)
 get_filename_component(PODOFO_DLL_DIR ${PODOFO_DLL_DEBUG} DIRECTORY)
 
+find_package(exiv2 CONFIG REQUIRED)
+get_target_property(EXIV2_DLL_DEBUG exiv2lib IMPORTED_LOCATION_DEBUG)
+get_filename_component(EXIV2_DLL_DIR ${EXIV2_DLL_DEBUG} DIRECTORY)
+
 # copy all dlls to the test directory
 add_custom_command(TARGET ${TEST_NAME} POST_BUILD
     # copy core dll
@@ -35,6 +47,11 @@ add_custom_command(TARGET ${TEST_NAME} POST_BUILD
     # copy podofo dll and its dependencies
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${PODOFO_DLL_DIR}
+        $<TARGET_FILE_DIR:${TEST_NAME}>
+
+    # copy exiv2 dll and its dependencies
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${EXIV2_DLL_DIR}
         $<TARGET_FILE_DIR:${TEST_NAME}>
 
     COMMENT "Copying all required DLLs to test directory"
