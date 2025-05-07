@@ -1,7 +1,7 @@
 /**
 * @file application.cpp
- * @brief MetaWiper GUI main application class implementation
- */
+* @brief MetaWiper GUI main application class implementation
+*/
 #include "application.h"
 #include <QQmlEngine>
 #include <QQmlContext>
@@ -76,7 +76,10 @@ void Application::selectFiles()
 
     if (dialog.exec()) {
         QStringList files = dialog.selectedFiles();
-        m_fileListModel->setFiles(files);
+        // Modified: Use addFile instead of setFiles to allow multiple files
+        for (const auto& file : files) {
+            m_fileListModel->addFile(file);
+        }
     }
 }
 
@@ -109,6 +112,9 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
     m_processing = true;
     emit processingChanged();
 
+    // Notify MainViewModel of processing status
+    m_mainViewModel->setProcessing(true);
+
     // Determine operation type
     file_handler::operation_type op_type;
     if (operation == "read") {
@@ -123,6 +129,7 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
         op_type = file_handler::operation_type::RESTORE;
     } else {
         m_processing = false;
+        m_mainViewModel->setProcessing(false);
         emit processingChanged();
         emit operationCompleted(false, "Unknown operation: " + operation);
         return;
@@ -193,6 +200,7 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
         // Finish processing, update status
         QMetaObject::invokeMethod(this, [this, allSuccess, message]() {
             m_processing = false;
+            m_mainViewModel->setProcessing(false);
             emit processingChanged();
             emit operationCompleted(allSuccess, message);
         }, Qt::QueuedConnection);

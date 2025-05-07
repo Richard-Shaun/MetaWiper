@@ -7,9 +7,42 @@ Item {
 
     property var model
 
+    // 新增信号，用于通知需要刷新元数据
+    signal refreshRequested()
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 8
+
+        // 添加标题栏，包含刷新按钮
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
+
+            Label {
+                text: qsTr("Metadata")
+                font.bold: true
+                font.pixelSize: 14
+            }
+
+            Item { Layout.fillWidth: true }
+
+            // 刷新按钮
+            Button {
+                id: refreshButton
+                icon.source: "qrc:/icons/refresh.svg"
+                text: qsTr("Refresh")
+                display: AbstractButton.TextBesideIcon
+                enabled: !app.processing
+
+                ToolTip.visible: hovered
+                ToolTip.text: qsTr("Refresh metadata from file")
+
+                onClicked: {
+                    root.refreshRequested()
+                }
+            }
+        }
 
         // Metadata table view
         Rectangle {
@@ -174,20 +207,27 @@ Item {
             }
         }
 
-        // Export button
-        Button {
-            text: qsTr("Export Metadata")
-            icon.source: "qrc:/icons/export.svg"
-            enabled: model && model.count > 0
-            Layout.alignment: Qt.AlignRight
+        // Action buttons row
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
 
-            onClicked: {
-                var outputDir = app.selectOutputDirectory()
-                if (outputDir != "") {
-                    var options = {"outputDirectory": outputDir}
-                    app.processFiles("export", options)
+            // Export button
+            Button {
+                text: qsTr("Export Metadata")
+                icon.source: "qrc:/icons/export.svg"
+                enabled: model && model.count > 0 && !app.processing
+
+                onClicked: {
+                    var outputDir = app.selectOutputDirectory()
+                    if (outputDir != "") {
+                        var options = {"outputDirectory": outputDir}
+                        app.processFiles("export", options)
+                    }
                 }
             }
+
+            Item { Layout.fillWidth: true }
         }
     }
 }

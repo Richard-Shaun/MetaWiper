@@ -51,6 +51,14 @@ ApplicationWindow {
                     confirmDialog.open()
                 }
             }
+            // Add new Overwrite action
+            Action {
+                text: qsTr("Overwrite Metadata")
+                enabled: fileListModel && fileListModel.count > 0 && !app.processing
+                onTriggered: {
+                    overwriteDialog.open()
+                }
+            }
             Action {
                 text: qsTr("Export Metadata")
                 enabled: fileListModel && fileListModel.count > 0 && !app.processing
@@ -94,6 +102,15 @@ ApplicationWindow {
                     onClicked: app.selectFiles()
                 }
 
+                // 添加刷新按钮到工具栏
+                ToolButton {
+                    icon.source: "qrc:/icons/refresh.svg"
+                    text: qsTr("Refresh")
+                    display: AbstractButton.TextUnderIcon
+                    enabled: fileListModel && fileListModel.count > 0 && !app.processing
+                    onClicked: app.processFiles("read")
+                }
+
                 ToolButton {
                     icon.source: "qrc:/icons/clean.svg"
                     text: qsTr("Clean")
@@ -119,6 +136,17 @@ ApplicationWindow {
                             var options = {"outputDirectory": outputDir}
                             app.processFiles("export", options)
                         }
+                    }
+                }
+
+                // Add Overwrite button to toolbar
+                ToolButton {
+                    icon.source: "qrc:/icons/settings.svg"
+                    text: qsTr("Overwrite")
+                    display: AbstractButton.TextUnderIcon
+                    enabled: fileListModel && fileListModel.count > 0 && !app.processing
+                    onClicked: {
+                        overwriteDialog.open()
                     }
                 }
 
@@ -207,6 +235,11 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         model: metadataModel
+
+                        // 添加连接刷新信号
+                        onRefreshRequested: {
+                            app.processFiles("read")
+                        }
                     }
                 }
             }
@@ -278,6 +311,16 @@ ApplicationWindow {
         })
     }
 
+    // Overwrite dialog component
+    OverwriteDialog {
+        id: overwriteDialog
+
+        onMetadataSubmitted: function(metadata) {
+            var options = { "metadata": metadata }
+            app.processFiles("overwrite", options)
+        }
+    }
+
     // Connect signals and slots
     Connections {
         target: app
@@ -297,11 +340,12 @@ ApplicationWindow {
             }
         }
 
-        function onProcessingChanged() {
-            if (mainViewModel) {
-                mainViewModel.setProcessing(app.processing)
-            }
-        }
+        // 移除会导致错误的函数调用
+        // function onProcessingChanged() {
+        //     if (mainViewModel) {
+        //         mainViewModel.setProcessing(app.processing)
+        //     }
+        // }
     }
 
     // Success notification
