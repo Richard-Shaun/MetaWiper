@@ -10,19 +10,14 @@ ApplicationWindow {
     visible: true
     width: 1200
     height: 800
-    title: mainViewModel.applicationTitle + " v" + mainViewModel.version
+    title: mainViewModel ? (mainViewModel.applicationTitle + " v" + mainViewModel.version) : "MetaWiper"
 
-    // Material 主题设置
+    // Material theme settings
     Material.theme: Material.Light
     Material.accent: Material.Blue
     Material.primary: Material.Indigo
 
-    // 获取视图模型实例
-    property FileListModel fileListModel: app.getFileListModel()
-    property MetadataModel metadataModel: app.getMetadataModel()
-    property MainViewModel mainViewModel: app.getMainViewModel()
-
-    // 顶部菜单栏
+    // Top menu bar
     menuBar: MenuBar {
         Menu {
             title: qsTr("File")
@@ -41,14 +36,14 @@ ApplicationWindow {
             title: qsTr("Operations")
             Action {
                 text: qsTr("Read Metadata")
-                enabled: fileListModel.count > 0 && !app.processing
+                enabled: fileListModel && fileListModel.count > 0 && !app.processing
                 onTriggered: app.processFiles("read")
             }
             Action {
                 text: qsTr("Clean Metadata")
-                enabled: fileListModel.count > 0 && !app.processing
+                enabled: fileListModel && fileListModel.count > 0 && !app.processing
                 onTriggered: {
-                    // 显示确认对话框
+                    // Show confirmation dialog
                     confirmDialog.title = qsTr("Clean Metadata")
                     confirmDialog.text = qsTr("This will permanently remove metadata from the selected file. Continue?")
                     confirmDialog.operation = "clean"
@@ -58,9 +53,9 @@ ApplicationWindow {
             }
             Action {
                 text: qsTr("Export Metadata")
-                enabled: fileListModel.count > 0 && !app.processing
+                enabled: fileListModel && fileListModel.count > 0 && !app.processing
                 onTriggered: {
-                    // 选择输出目录
+                    // Select output directory
                     var outputDir = app.selectOutputDirectory()
                     if (outputDir != "") {
                         var options = {"outputDirectory": outputDir}
@@ -79,12 +74,12 @@ ApplicationWindow {
         }
     }
 
-    // 主内容区域
+    // Main content area
     ColumnLayout {
         anchors.fill: parent
         spacing: 0
 
-        // 顶部工具栏
+        // Top toolbar
         ToolBar {
             Layout.fillWidth: true
 
@@ -103,7 +98,7 @@ ApplicationWindow {
                     icon.source: "qrc:/icons/clean.svg"
                     text: qsTr("Clean")
                     display: AbstractButton.TextUnderIcon
-                    enabled: fileListModel.count > 0 && !app.processing
+                    enabled: fileListModel && fileListModel.count > 0 && !app.processing
                     onClicked: {
                         confirmDialog.title = qsTr("Clean Metadata")
                         confirmDialog.text = qsTr("This will permanently remove metadata from the selected file. Continue?")
@@ -117,7 +112,7 @@ ApplicationWindow {
                     icon.source: "qrc:/icons/export.svg"
                     text: qsTr("Export")
                     display: AbstractButton.TextUnderIcon
-                    enabled: fileListModel.count > 0 && !app.processing
+                    enabled: fileListModel && fileListModel.count > 0 && !app.processing
                     onClicked: {
                         var outputDir = app.selectOutputDirectory()
                         if (outputDir != "") {
@@ -143,13 +138,13 @@ ApplicationWindow {
             }
         }
 
-        // 主内容分割视图
+        // Main content split view
         SplitView {
             Layout.fillWidth: true
             Layout.fillHeight: true
             orientation: Qt.Horizontal
 
-            // 左侧文件列表
+            // Left side file list
             Rectangle {
                 SplitView.preferredWidth: 300
                 SplitView.minimumWidth: 200
@@ -165,7 +160,7 @@ ApplicationWindow {
                         font.pixelSize: 16
                     }
 
-                    // 文件列表组件
+                    // File list component
                     FileList {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -174,7 +169,7 @@ ApplicationWindow {
                 }
             }
 
-            // 右侧元数据视图
+            // Right side metadata view
             Rectangle {
                 SplitView.fillWidth: true
                 color: "#FFFFFF"
@@ -187,7 +182,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
 
                         Label {
-                            text: qsTr("Metadata: ") + (fileListModel.currentFile ? fileListModel.currentFile.split('/').pop() : "")
+                            text: qsTr("Metadata: ") + (fileListModel && fileListModel.currentFile ? fileListModel.currentFile.split('/').pop() : "")
                             font.bold: true
                             font.pixelSize: 16
                         }
@@ -200,12 +195,14 @@ ApplicationWindow {
                             Layout.preferredWidth: 200
 
                             onTextChanged: {
-                                metadataModel.filterMetadata(text)
+                                if (metadataModel) {
+                                    metadataModel.filterMetadata(text)
+                                }
                             }
                         }
                     }
 
-                    // 元数据视图组件
+                    // Metadata view component
                     MetadataView {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -215,7 +212,7 @@ ApplicationWindow {
             }
         }
 
-        // 底部状态栏
+        // Bottom status bar
         Rectangle {
             Layout.fillWidth: true
             height: 30
@@ -227,24 +224,24 @@ ApplicationWindow {
                 anchors.rightMargin: 8
 
                 Label {
-                    text: mainViewModel.statusMessage
+                    text: mainViewModel ? mainViewModel.statusMessage : "Ready"
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
 
                 Label {
-                    text: qsTr("Files: ") + fileListModel.count
+                    text: qsTr("Files: ") + (fileListModel ? fileListModel.count : 0)
                 }
 
                 Label {
-                    text: qsTr("Metadata: ") + metadataModel.count
+                    text: qsTr("Metadata: ") + (metadataModel ? metadataModel.count : 0)
                     Layout.rightMargin: 8
                 }
             }
         }
     }
 
-    // 确认对话框
+    // Confirmation dialog
     Dialog {
         id: confirmDialog
         title: qsTr("Confirm")
@@ -269,20 +266,28 @@ ApplicationWindow {
         }
     }
 
-    // 关于对话框组件
+    // About dialog component
     AboutDialog {
         id: aboutDialog
-        appInfo: mainViewModel.getAppInfo()
+        // Provide default values if mainViewModel is null
+        appInfo: mainViewModel ? mainViewModel.getAppInfo() : ({
+            title: "MetaWiper",
+            version: "0.1.0",
+            description: "A tool for viewing and managing file metadata",
+            copyright: "Copyright © 2025"
+        })
     }
 
-    // 连接信号和槽
+    // Connect signals and slots
     Connections {
         target: app
 
         function onOperationCompleted(success, message) {
-            mainViewModel.handleOperationCompleted(success, message)
+            if (mainViewModel) {
+                mainViewModel.handleOperationCompleted(success, message)
+            }
 
-            // 如果操作成功，显示一个暂时通知
+            // If operation is successful, show a temporary notification
             if (success) {
                 successNotification.text = message
                 successNotification.open()
@@ -293,11 +298,13 @@ ApplicationWindow {
         }
 
         function onProcessingChanged() {
-            mainViewModel.setProcessing(app.processing)
+            if (mainViewModel) {
+                mainViewModel.setProcessing(app.processing)
+            }
         }
     }
 
-    // 成功通知
+    // Success notification
     Popup {
         id: successNotification
         x: (parent.width - width) / 2
@@ -334,7 +341,7 @@ ApplicationWindow {
         }
     }
 
-    // 错误通知
+    // Error notification
     Popup {
         id: errorNotification
         x: (parent.width - width) / 2

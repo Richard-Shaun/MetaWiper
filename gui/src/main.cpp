@@ -1,9 +1,8 @@
 /**
 * @file main.cpp
- * @brief MetaWiper GUI应用程序入口点
+ * @brief MetaWiper GUI application entry point
  */
-#include <QApplication>
-#include <QtQuickControls2/QQuickStyle>
+#include <QApplication>  // Changed from QGuiApplication to QApplication
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QtQuickControls2/QQuickStyle>
@@ -11,34 +10,40 @@
 
 int main(int argc, char *argv[])
 {
-    // 设置高DPI支持
+    // Enable high DPI support
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 
+    // Use QApplication instead of QGuiApplication to support widgets like QFileDialog
     QApplication app(argc, argv);
 
-    // 设置应用程序信息
+    // Set application information
     app.setOrganizationName("MetaWiper");
     app.setOrganizationDomain("metawiper.org");
     app.setApplicationName("MetaWiper");
     app.setApplicationVersion("0.1.0");
 
-    // 设置Material风格
+    // Set Material style
     QQuickStyle::setStyle("Material");
 
-    // 创建应用程序实例
+    // Create application instance
     Application metaWiperApp;
 
-    // 设置QML引擎
+    // Set up QML engine
     QQmlApplicationEngine engine;
 
-    // 向QML暴露应用程序实例
+    // Expose application instance to QML
     engine.rootContext()->setContextProperty("app", &metaWiperApp);
 
-    // 注册视图模型到QML
+    // Also expose models directly to QML context to avoid calling getters
+    engine.rootContext()->setContextProperty("fileListModel", metaWiperApp.getFileListModel());
+    engine.rootContext()->setContextProperty("metadataModel", metaWiperApp.getMetadataModel());
+    engine.rootContext()->setContextProperty("mainViewModel", metaWiperApp.getMainViewModel());
+
+    // Register view models to QML - removed parameter
     metaWiperApp.registerViewModels();
 
-    // 加载主QML文件
+    // Load main QML file
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {

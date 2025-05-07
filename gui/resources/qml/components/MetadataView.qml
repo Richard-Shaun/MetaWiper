@@ -11,14 +11,14 @@ Item {
         anchors.fill: parent
         spacing: 8
 
-        // 元数据表格视图
+        // Metadata table view
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
             color: "#F8F8F8"
 
-            // 表头
+            // Table header
             Rectangle {
                 id: tableHeader
                 width: parent.width
@@ -58,11 +58,11 @@ Item {
                 }
             }
 
-            // 显示空状态
+            // Empty state display
             ColumnLayout {
                 anchors.centerIn: parent
                 spacing: 10
-                visible: (root.model ? root.model.count : 0) === 0
+                visible: !(model && model.count > 0)
 
                 Image {
                     source: "qrc:/icons/info.svg"
@@ -80,12 +80,12 @@ Item {
                 Label {
                     text: qsTr("Select a file to view its metadata")
                     color: "#757575"
-                    visible: model.count === 0
+                    visible: !(model && model.count > 0)
                     Layout.alignment: Qt.AlignHCenter
                 }
             }
 
-            // 列表视图替代表格视图
+            // List view instead of table view
             ListView {
                 id: metadataListView
                 anchors.fill: parent
@@ -105,7 +105,7 @@ Item {
                     Row {
                         anchors.fill: parent
 
-                        // 键列
+                        // Key column
                         Rectangle {
                             width: parent.width * 0.4
                             height: parent.height
@@ -123,7 +123,7 @@ Item {
                             }
                         }
 
-                        // 值列
+                        // Value column
                         Rectangle {
                             width: parent.width * 0.6
                             height: parent.height
@@ -139,7 +139,7 @@ Item {
                                 readOnly: !(model.isEditable || false)
                                 selectByMouse: true
 
-                                // 复制按钮悬停时显示
+                                // Copy button appears on hover
                                 MouseArea {
                                     id: hoverArea
                                     anchors.fill: parent
@@ -174,7 +174,7 @@ Item {
             }
         }
 
-        // 导出按钮
+        // Export button
         Button {
             text: qsTr("Export Metadata")
             icon.source: "qrc:/icons/export.svg"

@@ -1,6 +1,6 @@
 /**
  * @file mainviewmodel.h
- * @brief 主视图模型类
+ * @brief Main view model class
  */
 #pragma once
 
@@ -10,7 +10,7 @@
 
 /**
  * @class MainViewModel
- * @brief 提供主界面所需的数据和逻辑给QML视图
+ * @brief Provides data and logic for the main interface to QML views
  */
 class MainViewModel : public QObject
 {
@@ -23,86 +23,86 @@ class MainViewModel : public QObject
 
 public:
     /**
-     * @brief 构造函数
-     * @param parent 父QObject
+     * @brief Constructor
+     * @param parent Parent QObject
      */
     explicit MainViewModel(QObject *parent = nullptr);
 
     /**
-     * @brief 获取应用程序标题
-     * @return 应用程序标题
+     * @brief Get application title
+     * @return Application title
      */
     QString getApplicationTitle() const;
 
     /**
-     * @brief 获取版本号
-     * @return 版本号
+     * @brief Get version number
+     * @return Version number
      */
     QString getVersion() const;
 
     /**
-     * @brief 获取状态消息
-     * @return 状态消息
+     * @brief Get status message
+     * @return Status message
      */
     QString getStatusMessage() const;
 
     /**
-     * @brief 设置状态消息
-     * @param message 状态消息
+     * @brief Set status message
+     * @param message Status message
      */
     void setStatusMessage(const QString &message);
 
     /**
-     * @brief 获取处理状态
-     * @return 如果正在处理则返回true，否则返回false
+     * @brief Get processing state
+     * @return true if processing, false otherwise
      */
     bool isProcessing() const;
 
     /**
-     * @brief 设置处理状态
-     * @param processing 处理状态
+     * @brief Set processing state
+     * @param processing Processing state
      */
     void setProcessing(bool processing);
 
     /**
-     * @brief 获取当前活动标签
-     * @return 当前活动标签索引
+     * @brief Get active tab
+     * @return Active tab index
      */
     int getActiveTab() const;
 
     /**
-     * @brief 设置当前活动标签
-     * @param tab 标签索引
+     * @brief Set active tab
+     * @param tab Tab index
      */
     void setActiveTab(int tab);
 
 public slots:
     /**
-     * @brief 获取应用程序信息
-     * @return 包含应用程序信息的映射
+     * @brief Get application information
+     * @return Map containing application information
      */
-    QVariantMap getAppInfo() const;
+    Q_INVOKABLE QVariantMap getAppInfo() const;
 
     /**
-     * @brief 处理操作完成事件
-     * @param success 操作是否成功
-     * @param message 操作消息
+     * @brief Handle operation completed event
+     * @param success Whether operation was successful
+     * @param message Operation message
      */
     void handleOperationCompleted(bool success, const QString &message);
 
 signals:
     /**
-     * @brief 状态消息变化信号
+     * @brief Signal emitted when status message changes
      */
     void statusMessageChanged();
 
     /**
-     * @brief 处理状态变化信号
+     * @brief Signal emitted when processing state changes
      */
     void processingChanged();
 
     /**
-     * @brief 活动标签变化信号
+     * @brief Signal emitted when active tab changes
      */
     void activeTabChanged();
 

@@ -1,9 +1,10 @@
 /**
- * @file application.cpp
- * @brief MetaWiper GUI主应用程序类实现
+* @file application.cpp
+ * @brief MetaWiper GUI main application class implementation
  */
 #include "application.h"
 #include <QQmlEngine>
+#include <QQmlContext>
 #include <QFileDialog>
 #include <QUrl>
 #include <QDebug>
@@ -19,10 +20,10 @@ Application::Application(QObject *parent)
       m_mainViewModel(std::make_unique<MainViewModel>()),
       m_processing(false)
 {
-    // 连接信号和槽
+    // Connect signals and slots
     connect(m_fileListModel.get(), &FileListModel::fileSelected,
             this, [this](const QString& filePath) {
-                // 当文件被选中时，读取其元数据
+                // When a file is selected, read its metadata
                 QVariantMap options;
                 processFiles("read", options);
             });
@@ -32,12 +33,12 @@ Application::~Application() = default;
 
 void Application::registerViewModels()
 {
-    // 注册自定义类型到QML
+    // Register custom types to QML
     qmlRegisterType<FileListModel>("MetaWiper", 1, 0, "FileListModel");
     qmlRegisterType<MetadataModel>("MetaWiper", 1, 0, "MetadataModel");
     qmlRegisterType<MainViewModel>("MetaWiper", 1, 0, "MainViewModel");
 
-    // 将模型实例导出到QML上下文
+    // Set object ownership for model instances
     QQmlEngine::setObjectOwnership(m_fileListModel.get(), QQmlEngine::CppOwnership);
     QQmlEngine::setObjectOwnership(m_metadataModel.get(), QQmlEngine::CppOwnership);
     QQmlEngine::setObjectOwnership(m_mainViewModel.get(), QQmlEngine::CppOwnership);
@@ -59,13 +60,13 @@ bool Application::isProcessing() const
 
 void Application::selectFiles()
 {
-    // 创建文件选择对话框
+    // Create file selection dialog
     QStringList supportedTypes = getSupportedFileTypes();
     QString filters = "Supported Files (";
     for (const auto& type : supportedTypes) {
         filters += "*" + type + " ";
     }
-    filters.chop(1); // 移除最后的空格
+    filters.chop(1); // Remove last space
     filters += ");;All Files (*)";
 
     QFileDialog dialog;
@@ -97,18 +98,18 @@ QUrl Application::selectOutputDirectory()
 
 void Application::processFiles(const QString& operation, const QVariantMap& options)
 {
-    // 检查是否有文件可处理
+    // Check if there are files to process
     QStringList files = m_fileListModel->getSelectedFiles();
     if (files.isEmpty()) {
         emit operationCompleted(false, "No files selected for processing");
         return;
     }
 
-    // 设置处理中状态
+    // Set processing state
     m_processing = true;
     emit processingChanged();
 
-    // 确定操作类型
+    // Determine operation type
     file_handler::operation_type op_type;
     if (operation == "read") {
         op_type = file_handler::operation_type::READ;
@@ -127,10 +128,10 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
         return;
     }
 
-    // 创建操作选项
+    // Create operation options
     file_handler::operation_options op_options;
 
-    // 如果指定了输出目录
+    // If output directory is specified
     if (options.contains("outputDirectory")) {
         QUrl outputDir = options["outputDirectory"].toUrl();
         if (outputDir.isValid() && outputDir.isLocalFile()) {
@@ -138,7 +139,7 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
         }
     }
 
-    // 如果提供了要覆盖的元数据
+    // If metadata to overwrite is provided
     if (options.contains("metadata") && options["metadata"].type() == QVariant::Map) {
         QVariantMap metadata = options["metadata"].toMap();
         for (auto it = metadata.begin(); it != metadata.end(); ++it) {
@@ -146,7 +147,7 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
         }
     }
 
-    // 在另一个线程中处理文件
+    // Process files in another thread
     QFuture<void> future = QtConcurrent::run([this, files, op_type, op_options]() {
         std::vector<std::string> filePaths;
         for (const auto& file : files) {
@@ -155,7 +156,7 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
 
         auto results = m_coreInstance->process_files(filePaths, op_type, op_options);
 
-        // 处理结果
+        // Process results
         bool allSuccess = true;
         QString message;
 
@@ -167,7 +168,7 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
                           QString::fromStdString(result.message) + "\n";
             }
 
-            // 如果是读取操作，并且是当前选中的文件，更新元数据模型
+            // If this is a read operation and it's the currently selected file, update metadata model
             if (op_type == file_handler::operation_type::READ &&
                 !files.isEmpty() &&
                 QString::fromStdString(filePaths[i]) == m_fileListModel->getCurrentFile()) {
@@ -176,7 +177,7 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
                     metadata[QString::fromStdString(key)] = QString::fromStdString(value);
                 }
 
-                // 更新UI必须在主线程进行
+                // UI updates must be done on the main thread
                 QMetaObject::invokeMethod(m_metadataModel.get(), "setMetadata",
                                          Qt::QueuedConnection,
                                          Q_ARG(QVariantMap, metadata));
@@ -189,7 +190,7 @@ void Application::processFiles(const QString& operation, const QVariantMap& opti
             message = "Operation failed";
         }
 
-        // 完成处理，更新状态
+        // Finish processing, update status
         QMetaObject::invokeMethod(this, [this, allSuccess, message]() {
             m_processing = false;
             emit processingChanged();

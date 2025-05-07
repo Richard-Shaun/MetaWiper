@@ -11,7 +11,7 @@ Item {
         anchors.fill: parent
         spacing: 6
 
-        // 工具栏
+        // Toolbar
         RowLayout {
             Layout.fillWidth: true
             spacing: 4
@@ -25,15 +25,17 @@ Item {
             Button {
                 text: qsTr("Remove")
                 icon.source: "qrc:/icons/remove.svg"
-                enabled: listView.currentIndex >= 0
+                enabled: listView.currentIndex >= 0 && model
                 onClicked: {
-                    model.removeFile(listView.currentIndex)
+                    if (model) {
+                        model.removeFile(listView.currentIndex)
+                    }
                 }
             }
 
             Button {
                 text: qsTr("Clear")
-                enabled: model.count > 0
+                enabled: model && model.count > 0
                 onClicked: {
                     confirmClearDialog.open()
                 }
@@ -42,7 +44,7 @@ Item {
             Item { Layout.fillWidth: true }
         }
 
-        // 文件列表视图
+        // File list view
         ListView {
             id: listView
             Layout.fillWidth: true
@@ -54,11 +56,11 @@ Item {
                 active: true
             }
 
-            // 空状态提示
+            // Empty state prompt
             Rectangle {
                 anchors.fill: parent
                 color: "#F8F8F8"
-                visible: listView.count === 0
+                visible: !(model && model.count > 0)
 
                 ColumnLayout {
                     anchors.centerIn: parent
@@ -91,13 +93,13 @@ Item {
                 height: 64
                 color: model.isSelected ? "#E3F2FD" : (index % 2 === 0 ? "#FFFFFF" : "#F5F5F5")
 
-                // 文件信息布局
+                // File info layout
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 8
                     spacing: 8
 
-                    // 文件图标（可以根据扩展名显示不同图标）
+                    // File icon (can show different icons based on extension)
                     Rectangle {
                         width: 40
                         height: 40
@@ -116,14 +118,14 @@ Item {
                         }
                     }
 
-                    // 文件信息
+                    // File information
                     ColumnLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         spacing: 2
 
                         Label {
-                            text: model.fileName
+                            text: model.fileName || ""
                             font.bold: true
                             elide: Text.ElideMiddle
                             Layout.fillWidth: true
@@ -131,8 +133,8 @@ Item {
 
                         Label {
                             text: {
-                                // 格式化文件大小
-                                var size = model.fileSize;
+                                // Format file size
+                                var size = model.fileSize || 0;
                                 if (size < 1024) return size + " B";
                                 if (size < 1024 * 1024) return Math.round(size / 1024 * 10) / 10 + " KB";
                                 return Math.round(size / (1024 * 1024) * 10) / 10 + " MB";
@@ -142,14 +144,14 @@ Item {
                         }
 
                         Label {
-                            text: model.lastModified
+                            text: model.lastModified || ""
                             font.pixelSize: 12
                             color: "#757575"
                         }
                     }
                 }
 
-                // 鼠标悬停效果
+                // Mouse hover effect
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
@@ -168,14 +170,16 @@ Item {
 
                     onClicked: {
                         listView.currentIndex = index
-                        root.model.selectFile(index)
+                        if (root.model) {
+                            root.model.selectFile(index)
+                        }
                     }
                 }
             }
         }
     }
 
-    // 确认清空文件列表对话框
+    // Confirm clear files dialog
     Dialog {
         id: confirmClearDialog
         title: qsTr("Clear Files")
@@ -192,7 +196,9 @@ Item {
         }
 
         onAccepted: {
-            model.clearFiles()
+            if (model) {
+                model.clearFiles()
+            }
         }
     }
 }
