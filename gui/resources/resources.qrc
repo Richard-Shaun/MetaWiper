@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/add.svg</file>
+        <file>icons/remove.svg</file>
+        <file>icons/clean.svg</file>
+        <file>icons/export.svg</file>
+        <file>icons/settings.svg</file>
+        <file>icons/info.svg</file>
+        <file>icons/logo.svg</file>
+        <file>icons/refresh.svg</file>
+        <file>icons/save.svg</file>
+        <file>qml/main.qml</file>
+        <file>qml/components/FileList.qml</file>
+        <file>qml/components/MetadataView.qml</file>
+        <file>qml/components/ActionPanel.qml</file>
+        <file>qml/components/AboutDialog.qml</file>
+        <file>qml/pages/MainPage.qml</file>
+        <file>qml/pages/SettingsPage.qml</file>
+        <file>qml/theme/Theme.qml</file>
+        <file>qml/theme/Colors.qml</file>
+        <file>qml/theme/Typography.qml</file>
+    </qresource>
+</RCC>
