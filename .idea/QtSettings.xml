@@ -15,8 +15,8 @@
         <entry key="Debug-Visual Studio">
           <value>
             <PerProfileState>
-              <option name="myQmlPath" value="$PROJECT_DIR$/../../../Softwares/Qt/6.8.2/msvc2022_64/qml" />
-              <option name="myQtBinPath" value="$PROJECT_DIR$/../../../Softwares/Qt/6.8.2/msvc2022_64/bin" />
+              <option name="myQmlPath" value="$PROJECT_DIR$/../../../Softwares/Qt/6.9.0/msvc2022_64/qml" />
+              <option name="myQtBinPath" value="$PROJECT_DIR$/../../../Softwares/Qt/6.9.0/msvc2022_64/bin" />
             </PerProfileState>
           </value>
         </entry>

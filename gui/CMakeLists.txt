@@ -2,6 +2,8 @@ set(GUI_NAME meta_wiper_gui)
 
 cmake_minimum_required(VERSION 3.16)
 
+set(CMAKE_PREFIX_PATH "C:/Softwares/Qt/6.9.0/msvc2022_64;${CMAKE_PREFIX_PATH}")
+
 # 确保项目包含Qt自动MOC
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
