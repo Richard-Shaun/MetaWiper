@@ -8,15 +8,18 @@ Dialog {
     modal: true
     standardButtons: Dialog.Close
 
-    // centering the dialog
-    anchors.centerIn: parent
+    // 固定宽高而不使用锚点
     width: 500
     height: 400
+
+    // 居中显示
+    x: (parent ? (parent.width - width) / 2 : 0)
+    y: (parent ? (parent.height - height) / 2 : 0)
 
     // 确保appInfo对象有默认值，防止初始未设置时出错
     property var appInfo: ({
         title: "MetaWiper",
-        version: "1.0.0",
+        version: "0.1.0",
         description: "A tool for viewing and cleaning file metadata",
         copyright: "© 2025 MetaWiper"
     })
@@ -24,26 +27,21 @@ Dialog {
     contentItem: ScrollView {
         id: scrollView
         clip: true
-        anchors.fill: parent
-        contentWidth: columnLayout.width
+        // 不要使用anchors.fill: parent，让ScrollView适应内容区域
+        ScrollBar.vertical.anchors.right: parent.right
+        ScrollBar.vertical.anchors.rightMargin: 1
 
         ColumnLayout {
             id: columnLayout
-            width: aboutDialog.width - 40
+            width: scrollView.width - 20
             spacing: 20
-            anchors.margins: 20
+            anchors.left: parent.left
+            anchors.leftMargin: 10
 
             // 应用图标和标题
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 20
-
-                Image {
-                    source: "qrc:/icons/logo.svg"
-                    sourceSize.width: 80
-                    sourceSize.height: 80
-                    Layout.alignment: Qt.AlignTop
-                }
 
                 ColumnLayout {
                     Layout.fillWidth: true
