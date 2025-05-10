@@ -141,7 +141,7 @@ ApplicationWindow {
 
                 // Add Overwrite button to toolbar
                 ToolButton {
-                    icon.source: "qrc:/icons/settings.svg"
+                    icon.source: "qrc:/icons/overwrite.svg"
                     text: qsTr("Overwrite")
                     display: AbstractButton.TextUnderIcon
                     enabled: fileListModel && fileListModel.count > 0 && !app.processing
