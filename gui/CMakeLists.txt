@@ -1,21 +1,26 @@
 set(GUI_NAME meta_wiper_gui)
 
-cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_PREFIX_PATH "C:/Softwares/Qt/6.9.0/msvc2022_64;${CMAKE_PREFIX_PATH}")
 
-# 确保项目包含Qt自动MOC
+# ensure the project contains Qt auto MOC
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# 设置Qt模块
+# set up Qt modules
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Quick QuickControls2)
 
-# 添加QML资源
+# add all qml resources
 qt_add_resources(QML_RESOURCES resources/resources.qrc)
 
-# 设置应用程序源文件
+# set up the version header file
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/include_autogen/version.h
+)
+
+# set application source files
 set(SOURCE_FILES
     src/main.cpp
     src/application.cpp
@@ -28,13 +33,13 @@ set(SOURCE_FILES
     include/viewmodels/mainviewmodel.h
 )
 
-# 添加可执行文件
 add_executable(${GUI_NAME} ${SOURCE_FILES} ${QML_RESOURCES})
 
-# 包含目录
-target_include_directories(${GUI_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${GUI_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_BINARY_DIR}/include_autogen
+)
 
-# 链接库
 target_link_libraries(${GUI_NAME} PRIVATE
     Qt6::Core
     Qt6::Gui
@@ -42,12 +47,6 @@ target_link_libraries(${GUI_NAME} PRIVATE
     Qt6::Quick
     Qt6::QuickControls2
     meta_wiper_core
-)
-
-# 设置C++标准
-set_target_properties(${GUI_NAME} PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED ON
 )
 
 # find all dll paths

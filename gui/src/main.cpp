@@ -7,6 +7,7 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 #include "application.h"
+#include "version.h"
 
 int main(int argc, char *argv[]){
 
@@ -20,7 +21,7 @@ int main(int argc, char *argv[]){
     app.setOrganizationName("Richard Shaun");
     app.setOrganizationDomain("https://github.com/Richard-Shaun/");
     app.setApplicationName("MetaWiper");
-    app.setApplicationVersion("0.1.0");
+    app.setApplicationVersion(META_WIPER_VERSION);
 
     // Set Material style
     QQuickStyle::setStyle("Material");
