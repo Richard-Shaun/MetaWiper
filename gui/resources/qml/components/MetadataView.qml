@@ -14,7 +14,7 @@ Item {
         anchors.fill: parent
         spacing: 8
 
-        // 添加标题栏，包含刷新按钮
+        // table header
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
@@ -151,25 +151,30 @@ Item {
                                 selectByMouse: true
 
                                 // Copy button appears on hover
-                                MouseArea {
-                                    id: hoverArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    acceptedButtons: Qt.NoButton
-                                }
-
-                                Button {
-                                    text: qsTr("Copy")
+                                Item {
+                                    id: buttonContainer
                                     anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    visible: hoverArea.containsMouse && !copyTooltip.visible
-                                    height: 30
-                                    width: 70
+                                    width: 100
+                                    height: 35
 
-                                    onClicked: {
-                                        valueEdit.selectAll()
-                                        valueEdit.copy()
-                                        copyTooltip.open()
+                                    // 悬停检测区域
+                                    HoverHandler {
+                                        id: hoverHandler
+                                    }
+
+                                    Button {
+                                        id: copyButton
+                                        anchors.fill: parent
+                                        text: qsTr("Copy")
+                                        visible: hoverHandler.hovered && !copyTooltip.visible
+
+                                        onClicked: {
+                                            valueEdit.selectAll()
+                                            valueEdit.copy()
+                                            copyTooltip.open()
+                                            valueEdit.deselect() // 复制后取消选择
+                                        }
                                     }
                                 }
 
@@ -177,7 +182,11 @@ Item {
                                     id: copyTooltip
                                     text: qsTr("Copied!")
                                     timeout: 1000
+                                    visible: false // 确保初始状态为隐藏
+                                    y: valueEdit.height / 2
+                                    x: buttonContainer.x - 10
                                 }
+
                             }
                         }
                     }
@@ -189,22 +198,6 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
-
-            // Export button
-            /*Button {
-                text: qsTr("Export Metadata")
-                icon.source: "qrc:/icons/export.svg"
-                enabled: model && model.count > 0 && !app.processing
-
-                onClicked: {
-                    var outputDir = app.selectOutputDirectory()
-                    if (outputDir != "") {
-                        var options = {"outputDirectory": outputDir}
-                        app.processFiles("export", options)
-                    }
-                }
-            }*/
-
             Item { Layout.fillWidth: true }
         }
     }
