@@ -19,29 +19,7 @@ Item {
             Layout.fillWidth: true
             spacing: 8
 
-            Label {
-                text: qsTr("Metadata")
-                font.bold: true
-                font.pixelSize: 14
-            }
-
             Item { Layout.fillWidth: true }
-
-            // 刷新按钮
-            Button {
-                id: refreshButton
-                icon.source: "qrc:/icons/refresh.svg"
-                text: qsTr("Refresh")
-                display: AbstractButton.TextBesideIcon
-                enabled: !app.processing
-
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Refresh metadata from file")
-
-                onClicked: {
-                    root.refreshRequested()
-                }
-            }
         }
 
         // Metadata table view

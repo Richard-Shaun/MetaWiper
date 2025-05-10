@@ -101,15 +101,14 @@ ApplicationWindow {
                     display: AbstractButton.TextUnderIcon
                     onClicked: app.selectFiles()
                 }
-
-                // 添加刷新按钮到工具栏
-                /*ToolButton {
+                
+                ToolButton {
                     icon.source: "qrc:/icons/refresh.svg"
                     text: qsTr("Refresh")
                     display: AbstractButton.TextUnderIcon
                     enabled: fileListModel && fileListModel.count > 0 && !app.processing
                     onClicked: app.processFiles("read")
-                }*/
+                }
 
                 ToolButton {
                     icon.source: "qrc:/icons/clean.svg"

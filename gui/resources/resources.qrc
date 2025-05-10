@@ -14,7 +14,6 @@
         <file>qml/main.qml</file>
         <file>qml/components/FileList.qml</file>
         <file>qml/components/MetadataView.qml</file>
-        <file>qml/components/ActionPanel.qml</file>
         <file>qml/components/AboutDialog.qml</file>
         <file>qml/components/OverwriteDialog.qml</file>
         <file>qml/components/SettingsDialog.qml</file>
