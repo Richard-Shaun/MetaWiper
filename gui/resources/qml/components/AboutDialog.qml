@@ -7,18 +7,31 @@ Dialog {
     title: qsTr("About MetaWiper")
     modal: true
     standardButtons: Dialog.Close
-    x: (parent.width - width) / 2
-    y: (parent.height - height) / 2
+
+    // centering the dialog
+    anchors.centerIn: parent
     width: 500
     height: 400
 
-    property var appInfo: ({})
+    // 确保appInfo对象有默认值，防止初始未设置时出错
+    property var appInfo: ({
+        title: "MetaWiper",
+        version: "1.0.0",
+        description: "A tool for viewing and cleaning file metadata",
+        copyright: "© 2025 MetaWiper"
+    })
 
-    contentItem: Item {
+    contentItem: ScrollView {
+        id: scrollView
+        clip: true
+        anchors.fill: parent
+        contentWidth: columnLayout.width
+
         ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 20
+            id: columnLayout
+            width: aboutDialog.width - 40
             spacing: 20
+            anchors.margins: 20
 
             // 应用图标和标题
             RowLayout {
@@ -27,8 +40,8 @@ Dialog {
 
                 Image {
                     source: "qrc:/icons/logo.svg"
-                    width: 80
-                    height: 80
+                    sourceSize.width: 80
+                    sourceSize.height: 80
                     Layout.alignment: Qt.AlignTop
                 }
 
@@ -37,18 +50,18 @@ Dialog {
                     spacing: 4
 
                     Label {
-                        text: appInfo.title
+                        text: aboutDialog.appInfo.title || ""
                         font.pixelSize: 24
                         font.bold: true
                     }
 
                     Label {
-                        text: qsTr("Version ") + appInfo.version
+                        text: qsTr("Version ") + (aboutDialog.appInfo.version || "")
                         font.pixelSize: 14
                     }
 
                     Label {
-                        text: appInfo.description
+                        text: aboutDialog.appInfo.description || ""
                         wrapMode: Text.Wrap
                         Layout.fillWidth: true
                     }
@@ -63,85 +76,80 @@ Dialog {
             }
 
             // 软件特性介绍
-            ScrollView {
+            ColumnLayout {
                 Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
+                spacing: 10
 
-                ColumnLayout {
-                    width: aboutDialog.width - 50
-                    spacing: 10
+                Label {
+                    text: qsTr("Features")
+                    font.bold: true
+                    font.pixelSize: 16
+                }
 
-                    Label {
-                        text: qsTr("Features")
-                        font.bold: true
-                        font.pixelSize: 16
-                    }
+                Label {
+                    text: qsTr("• View metadata from various file types, including PDF, JPEG, etc.")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
 
-                    Label {
-                        text: qsTr("• View metadata from various file types, including PDF, JPEG, etc.")
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    text: qsTr("• Clean metadata to protect your privacy")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
 
-                    Label {
-                        text: qsTr("• Clean metadata to protect your privacy")
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    text: qsTr("• Export metadata to JSON format")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
 
-                    Label {
-                        text: qsTr("• Export metadata to JSON format")
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    text: qsTr("• Overwrite metadata with custom values")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
 
-                    Label {
-                        text: qsTr("• Overwrite metadata with custom values")
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                Item { height: 20; width: 1 }
 
-                    Item { height: 20 }
+                Label {
+                    text: qsTr("Technologies")
+                    font.bold: true
+                    font.pixelSize: 16
+                }
 
-                    Label {
-                        text: qsTr("Technologies")
-                        font.bold: true
-                        font.pixelSize: 16
-                    }
+                Label {
+                    text: qsTr("• Qt 6.8.3 with QML and Material Design")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
 
-                    Label {
-                        text: qsTr("• Qt 6.8.3 with QML and Material Design")
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    text: qsTr("• C++17 language standard")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
 
-                    Label {
-                        text: qsTr("• C++17 language standard")
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    text: qsTr("• PoDoFo 0.10.4 for PDF metadata handling")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
 
-                    Label {
-                        text: qsTr("• PoDoFo 0.10.4 for PDF metadata handling")
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    text: qsTr("• Exiv2 for image metadata handling")
+                    wrapMode: Text.Wrap
+                    Layout.fillWidth: true
+                }
 
-                    Label {
-                        text: qsTr("• Exiv2 for image metadata handling")
-                        wrapMode: Text.Wrap
-                        Layout.fillWidth: true
-                    }
+                Item { height: 20; width: 1 }
 
-                    Item { height: 20 }
-
-                    Label {
-                        text: appInfo.copyright
-                        Layout.fillWidth: true
-                        horizontalAlignment: Text.AlignCenter
-                        font.pixelSize: 12
-                    }
+                Label {
+                    text: aboutDialog.appInfo.copyright || ""
+                    Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pixelSize: 12
+                    Layout.topMargin: 10
                 }
             }
         }

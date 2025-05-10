@@ -302,13 +302,6 @@ ApplicationWindow {
     // About dialog component
     AboutDialog {
         id: aboutDialog
-        // Provide default values if mainViewModel is null
-        appInfo: mainViewModel ? mainViewModel.getAppInfo() : ({
-            title: "MetaWiper",
-            version: "0.1.0",
-            description: "A tool for viewing and managing file metadata",
-            copyright: "Copyright © 2025"
-        })
     }
 
     // Overwrite dialog component
