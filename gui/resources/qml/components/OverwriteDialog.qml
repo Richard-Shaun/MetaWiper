@@ -9,8 +9,8 @@ Dialog {
     standardButtons: Dialog.Ok | Dialog.Cancel
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
-    width: 500
-    height: 500
+    width: parent.width/2.3
+    height: parent.height/1.5
 
     property var initialMetadata: ({})
     property bool accepted: false
@@ -30,7 +30,7 @@ Dialog {
             })
         }
 
-        // Initialize with existing metadata
+        // Initialize with common metadata fields
         Component.onCompleted: {
             // Add common editable fields
             append({ key: "Title", value: "", isNew: true })
@@ -41,6 +41,21 @@ Dialog {
 
             // Add one empty row for new entries
             addEmptyRow()
+        }
+    }
+
+    // Fill in current metadata values when dialog opens
+    onOpened: {
+        // Try to pre-populate values from current metadata if available
+        if (metadataModel && window.metadataModel) {
+            var currentFileMetadata = window.metadataModel.metadata
+
+            for (var i = 0; i < metadataModel.count; i++) {
+                var item = metadataModel.get(i)
+                if (item.key && currentFileMetadata[item.key]) {
+                    metadataModel.setProperty(i, "value", currentFileMetadata[item.key])
+                }
+            }
         }
     }
 
@@ -66,7 +81,7 @@ Dialog {
 
                     Label {
                         text: qsTr("Key")
-                        Layout.preferredWidth: parent.width * 0.45
+                        Layout.preferredWidth: parent.width * 0.31
                         horizontalAlignment: Text.AlignHCenter
                         font.bold: true
                     }
@@ -94,34 +109,51 @@ Dialog {
                 model: metadataModel
                 clip: true
 
+                // 增加每项之间的间距
+                spacing: 4
+
+                // 确保列表视图有适当的内边距
+                topMargin: 2
+                bottomMargin: 2
+
                 ScrollBar.vertical: ScrollBar {}
 
                 delegate: Rectangle {
                     width: metadataListView.width
-                    height: 40
+                    // 增加每行的高度
+                    height: 60
                     color: index % 2 === 0 ? "#f5f5f5" : "#ffffff"
 
                     RowLayout {
                         anchors.fill: parent
+                        // 减小内边距以避免缩小输入框的可见区域
                         anchors.margins: 4
                         spacing: 8
 
                         // Key field
                         TextField {
                             id: keyField
-                            Layout.preferredWidth: parent.width * 0.45
+                            Layout.preferredWidth: parent.width * 0.3
                             text: model.key
                             placeholderText: qsTr("Enter key")
                             onTextChanged: model.key = text
+                            // 确保文本垂直居中显示
+                            verticalAlignment: TextInput.AlignVCenter
+                            // 增加文本左边距
+                            leftPadding: 8
                         }
 
                         // Value field
                         TextField {
                             id: valueField
-                            Layout.fillWidth: true
+                            Layout.preferredWidth: parent.width * 0.55
                             text: model.value
                             placeholderText: qsTr("Enter value")
                             onTextChanged: model.value = text
+                            // 确保文本垂直居中显示
+                            verticalAlignment: TextInput.AlignVCenter
+                            // 增加文本左边距
+                            leftPadding: 8
                         }
 
                         // Delete button
@@ -141,6 +173,8 @@ Dialog {
                 icon.source: "qrc:/icons/add.svg"
                 Layout.alignment: Qt.AlignRight
                 onClicked: metadataModel.addEmptyRow()
+                // 增加顶部边距，与列表分开
+                Layout.topMargin: 4
             }
         }
     }

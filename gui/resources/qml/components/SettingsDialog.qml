@@ -11,8 +11,8 @@ Dialog {
     closePolicy: Dialog.CloseOnEscape | Dialog.CloseOnPressOutside
 
     // 设置对话框尺寸
-    width: 500
-    height: 500
+    width: parent.width/2.3
+    height: parent.height/2
 
     // 居中显示
     x: (parent.width - width) / 2
