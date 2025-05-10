@@ -213,7 +213,7 @@ Item {
             spacing: 8
 
             // Export button
-            Button {
+            /*Button {
                 text: qsTr("Export Metadata")
                 icon.source: "qrc:/icons/export.svg"
                 enabled: model && model.count > 0 && !app.processing
@@ -225,7 +225,7 @@ Item {
                         app.processFiles("export", options)
                     }
                 }
-            }
+            }*/
 
             Item { Layout.fillWidth: true }
         }

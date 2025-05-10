@@ -16,11 +16,11 @@ Item {
             Layout.fillWidth: true
             spacing: 4
 
-            Button {
+            /*Button {
                 text: qsTr("Add")
                 icon.source: "qrc:/icons/add.svg"
                 onClicked: app.selectFiles()
-            }
+            }*/
 
             Button {
                 text: qsTr("Remove")
@@ -35,6 +35,7 @@ Item {
 
             Button {
                 text: qsTr("Clear")
+                icon.source: "qrc:/icons/clear.svg"
                 enabled: model && model.count > 0
                 onClicked: {
                     confirmClearDialog.open()
