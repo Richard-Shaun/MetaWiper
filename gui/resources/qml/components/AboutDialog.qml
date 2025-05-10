@@ -7,10 +7,11 @@ Dialog {
     title: qsTr("About MetaWiper")
     modal: true
     standardButtons: Dialog.Close
+    closePolicy: Dialog.CloseOnEscape | Dialog.CloseOnPressOutside
 
     // 固定宽高而不使用锚点
-    width: 500
-    height: 400
+    width: parent.width/2.3
+    height: parent.height/2
 
     // 居中显示
     x: (parent ? (parent.width - width) / 2 : 0)
@@ -19,7 +20,7 @@ Dialog {
     // 确保appInfo对象有默认值，防止初始未设置时出错
     property var appInfo: ({
         title: "MetaWiper",
-        version: "0.1.0",
+        version: "1.0.0",
         description: "A tool for viewing and cleaning file metadata",
         copyright: "© 2025 MetaWiper"
     })
@@ -27,9 +28,9 @@ Dialog {
     contentItem: ScrollView {
         id: scrollView
         clip: true
-        // 不要使用anchors.fill: parent，让ScrollView适应内容区域
-        ScrollBar.vertical.anchors.right: parent.right
-        ScrollBar.vertical.anchors.rightMargin: 1
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+        padding: 5  // 添加内边距来替代锚点设置
 
         ColumnLayout {
             id: columnLayout
@@ -140,7 +141,11 @@ Dialog {
                     Layout.fillWidth: true
                 }
 
-                Item { height: 20; width: 1 }
+                Item {
+                    height: 20
+                    width: 1
+                    Layout.fillWidth: true
+                }
 
                 Label {
                     text: aboutDialog.appInfo.copyright || ""
@@ -148,6 +153,7 @@ Dialog {
                     horizontalAlignment: Text.AlignHCenter
                     font.pixelSize: 12
                     Layout.topMargin: 10
+                    opacity: 0.7
                 }
             }
         }
