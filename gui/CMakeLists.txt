@@ -19,10 +19,10 @@ qt_add_resources(QML_RESOURCES resources/resources.qrc)
 set(SOURCE_FILES
     src/main.cpp
     src/application.cpp
-    src/application.h
     src/viewmodels/filelistmodel.cpp
     src/viewmodels/metadatamodel.cpp
     src/viewmodels/mainviewmodel.cpp
+    include/application.h
     include/viewmodels/filelistmodel.h
     include/viewmodels/metadatamodel.h
     include/viewmodels/mainviewmodel.h
