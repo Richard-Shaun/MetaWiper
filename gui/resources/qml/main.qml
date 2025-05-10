@@ -157,6 +157,15 @@ ApplicationWindow {
                     running: app.processing
                 }
 
+
+                ToolButton {
+                    icon.source: "qrc:/icons/settings.svg"
+                    text: qsTr("Settings")
+                    display: AbstractButton.TextUnderIcon
+                    onClicked: settingsDialog.open()
+                }
+
+
                 ToolButton {
                     icon.source: "qrc:/icons/info.svg"
                     text: qsTr("About")
@@ -297,6 +306,10 @@ ApplicationWindow {
         onAccepted: {
             app.processFiles(operation, options)
         }
+    }
+
+    SettingsDialog {
+        id: settingsDialog
     }
 
     // About dialog component

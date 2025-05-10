@@ -14,7 +14,11 @@
         </entry>
         <entry key="Debug-Visual Studio">
           <value>
-            <PerProfileState />
+            <PerProfileState>
+              <option name="myLSPEnabled" value="true" />
+              <option name="myLSPCompletionEnabled" value="true" />
+              <option name="myQmlFormatEnabled" value="true" />
+            </PerProfileState>
           </value>
         </entry>
       </map>

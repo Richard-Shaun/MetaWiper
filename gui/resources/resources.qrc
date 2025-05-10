@@ -16,7 +16,7 @@
         <file>qml/components/ActionPanel.qml</file>
         <file>qml/components/AboutDialog.qml</file>
         <file>qml/components/OverwriteDialog.qml</file>
-        <file>qml/pages/SettingsPage.qml</file>
+        <file>qml/components/SettingsDialog.qml</file>
         <file>qml/theme/Theme.qml</file>
         <file>qml/theme/Colors.qml</file>
         <file>qml/theme/Typography.qml</file>
