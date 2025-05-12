@@ -48,7 +48,7 @@ target_link_libraries(${GUI_NAME} PRIVATE
     Qt6::QuickControls2
     meta_wiper_core
 )
-#[==[
+
 # find all dll paths
 find_package(podofo CONFIG REQUIRED)
 get_target_property(PODOFO_DLL_DEBUG podofo_shared IMPORTED_LOCATION_DEBUG)
@@ -57,6 +57,14 @@ get_filename_component(PODOFO_DLL_DIR ${PODOFO_DLL_DEBUG} DIRECTORY)
 find_package(exiv2 CONFIG REQUIRED)
 get_target_property(EXIV2_DLL_DEBUG exiv2lib IMPORTED_LOCATION_DEBUG)
 get_filename_component(EXIV2_DLL_DIR ${EXIV2_DLL_DEBUG} DIRECTORY)
+
+find_package(pugixml CONFIG REQUIRED)
+get_target_property(PUGIXML_DLL_DEBUG pugixml::shared IMPORTED_LOCATION_DEBUG)
+get_filename_component(PUGIXML_DLL_DIR ${PUGIXML_DLL_DEBUG} DIRECTORY)
+
+find_package(libzip CONFIG REQUIRED)
+get_target_property(LIBZIP_DLL_DEBUG libzip::zip IMPORTED_LOCATION_DEBUG)
+get_filename_component(LIBZIP_DLL_DIR ${LIBZIP_DLL_DEBUG} DIRECTORY)
 
 # copy all dlls to the test directory
 add_custom_command(TARGET ${GUI_NAME} POST_BUILD
@@ -75,9 +83,18 @@ add_custom_command(TARGET ${GUI_NAME} POST_BUILD
         ${EXIV2_DLL_DIR}
         $<TARGET_FILE_DIR:${GUI_NAME}>
 
+    # copy pugixml dll and its dependencies
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PUGIXML_DLL_DIR}
+        $<TARGET_FILE_DIR:${GUI_NAME}>
+
+    # copy libzip dll and its dependencies
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${LIBZIP_DLL_DIR}
+        $<TARGET_FILE_DIR:${GUI_NAME}>
+
     COMMENT "Copying all required DLLs to test directory"
 )
-#]==]
 
 # 构建后复制QML文件 - 使用正确的路径
 add_custom_command(TARGET meta_wiper_gui POST_BUILD
