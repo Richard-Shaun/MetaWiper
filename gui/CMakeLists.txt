@@ -122,3 +122,111 @@ add_custom_command(TARGET meta_wiper_gui POST_BUILD
             $<TARGET_FILE_DIR:meta_wiper_gui>
 )
 
+# 添加安装规则
+install(TARGETS ${GUI_NAME}
+    RUNTIME DESTINATION bin
+    COMPONENT applications
+)
+
+# 安装QML文件
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/resources/qml
+    DESTINATION bin/qml
+    COMPONENT applications
+)
+
+# 安装图标文件
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/resources/icons
+    DESTINATION bin/icons
+    COMPONENT applications
+)
+
+# 安装依赖的core库
+install(TARGETS meta_wiper_core
+    RUNTIME DESTINATION bin
+    COMPONENT libraries
+)
+
+# 为Windows设置安装依赖库的规则
+if(WIN32)
+    # 创建一个脚本在构建后收集所有需要的DLL
+    set(COLLECT_DEPENDENCIES_SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/collect_dependencies.cmake")
+    file(WRITE ${COLLECT_DEPENDENCIES_SCRIPT} "
+        # 收集所有需要安装的DLL
+        file(GLOB QT_DLLS \"$<TARGET_FILE_DIR:${GUI_NAME}>/*.dll\")
+        file(GLOB QT_PLATFORM_DLLS \"$<TARGET_FILE_DIR:${GUI_NAME}>/platforms/*.dll\")
+        file(GLOB QT_STYLES_DLLS \"$<TARGET_FILE_DIR:${GUI_NAME}>/styles/*.dll\")
+        file(GLOB QT_IMAGEFORMATS_DLLS \"$<TARGET_FILE_DIR:${GUI_NAME}>/imageformats/*.dll\")
+        file(GLOB QT_QML_DLLS \"$<TARGET_FILE_DIR:${GUI_NAME}>/QtQml/*.dll\")
+        file(GLOB QT_QUICK_DLLS \"$<TARGET_FILE_DIR:${GUI_NAME}>/QtQuick/*.dll\")
+        file(GLOB QT_QUICK_CONTROLS_DLLS \"$<TARGET_FILE_DIR:${GUI_NAME}>/QtQuick/Controls/*.dll\")
+
+        # 将所有DLL写入文件列表
+        file(WRITE \"${CMAKE_CURRENT_BINARY_DIR}/dll_list.txt\" \"\")
+        foreach(DLL_FILE \${QT_DLLS})
+            file(APPEND \"${CMAKE_CURRENT_BINARY_DIR}/dll_list.txt\" \"\${DLL_FILE}\\n\")
+        endforeach()
+
+        # 创建子目录列表
+        set(SUBDIRS platforms styles imageformats QtQml QtQuick \"QtQuick/Controls\")
+        foreach(SUBDIR \${SUBDIRS})
+            file(MAKE_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}/collected_dlls/\${SUBDIR}\")
+        endforeach()
+
+        # 复制所有DLL到临时目录
+        foreach(DLL_FILE \${QT_DLLS})
+            file(COPY \${DLL_FILE} DESTINATION \"${CMAKE_CURRENT_BINARY_DIR}/collected_dlls\")
+        endforeach()
+
+        # 复制平台DLL
+        foreach(DLL_FILE \${QT_PLATFORM_DLLS})
+            file(COPY \${DLL_FILE} DESTINATION \"${CMAKE_CURRENT_BINARY_DIR}/collected_dlls/platforms\")
+        endforeach()
+
+        # 复制样式DLL
+        foreach(DLL_FILE \${QT_STYLES_DLLS})
+            file(COPY \${DLL_FILE} DESTINATION \"${CMAKE_CURRENT_BINARY_DIR}/collected_dlls/styles\")
+        endforeach()
+
+        # 复制图像格式DLL
+        foreach(DLL_FILE \${QT_IMAGEFORMATS_DLLS})
+            file(COPY \${DLL_FILE} DESTINATION \"${CMAKE_CURRENT_BINARY_DIR}/collected_dlls/imageformats\")
+        endforeach()
+
+        # 复制QML DLL
+        foreach(DLL_FILE \${QT_QML_DLLS})
+            file(COPY \${DLL_FILE} DESTINATION \"${CMAKE_CURRENT_BINARY_DIR}/collected_dlls/QtQml\")
+        endforeach()
+
+        # 复制Quick DLL
+        foreach(DLL_FILE \${QT_QUICK_DLLS})
+            file(COPY \${DLL_FILE} DESTINATION \"${CMAKE_CURRENT_BINARY_DIR}/collected_dlls/QtQuick\")
+        endforeach()
+
+        # 复制Quick Controls DLL
+        foreach(DLL_FILE \${QT_QUICK_CONTROLS_DLLS})
+            file(COPY \${DLL_FILE} DESTINATION \"${CMAKE_CURRENT_BINARY_DIR}/collected_dlls/QtQuick/Controls\")
+        endforeach()
+    ")
+
+    # 在构建后执行收集依赖的脚本
+    add_custom_command(TARGET ${GUI_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -P ${COLLECT_DEPENDENCIES_SCRIPT}
+        COMMENT "Collecting dependencies for installation package"
+    )
+
+    # 安装收集到的DLL
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/collected_dlls/
+        DESTINATION bin
+        COMPONENT libraries
+    )
+
+    # 安装第三方库
+    install(FILES
+        ${PODOFO_DLL_DEBUG}
+        ${EXIV2_DLL_DEBUG}
+        ${PUGIXML_DLL_DEBUG}
+        ${LIBZIP_DLL_DEBUG}
+        DESTINATION bin
+        COMPONENT libraries
+    )
+endif()
