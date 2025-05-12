@@ -12,6 +12,7 @@ set(CORE_SOURCES
     # processors codes
     src/processors/pdf_processor.cpp
     src/processors/jpeg_processor.cpp
+    src/processors/docx_processor.cpp
 )
 set (CORE_HEADERS
     # api headers
@@ -23,6 +24,7 @@ set (CORE_HEADERS
     # processors headers
     include/processors/pdf_processor.h
     include/processors/jpeg_processor.h
+    include/processors/docx_processor.h
 )
 
 add_library(${LIB_NAME} SHARED ${CORE_SOURCES} ${CORE_HEADERS})
@@ -45,6 +47,12 @@ target_link_libraries(${LIB_NAME} PRIVATE $<IF:$<TARGET_EXISTS:podofo_shared>,po
 
 find_package(exiv2 CONFIG REQUIRED)
 target_link_libraries(${LIB_NAME} PRIVATE Exiv2::exiv2lib)
+
+find_package(pugixml CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE pugixml::shared pugixml::pugixml)
+
+find_package(libzip CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE libzip::zip)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(${LIB_NAME} PRIVATE -Wall -Wextra)

@@ -42,10 +42,10 @@ namespace meta_wiper_core {
         return results;
     }
 
-    std::vector<std::string> meta_wiper_core_class::get_supported_file_types() const {
+    std::vector<std::string> meta_wiper_core_class::get_supported_file_types() {
         // Return all supported extensions
         // In a more advanced implementation, this could query the processor_factory
-        return {".pdf", ".jpg", ".jpeg"};
+        return {".pdf", ".jpg", ".jpeg", ".docx"};
     }
 
     bool meta_wiper_core_class::type_supported(const std::string& file_extension) const {

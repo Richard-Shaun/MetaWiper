@@ -48,7 +48,7 @@ target_link_libraries(${GUI_NAME} PRIVATE
     Qt6::QuickControls2
     meta_wiper_core
 )
-
+#[==[
 # find all dll paths
 find_package(podofo CONFIG REQUIRED)
 get_target_property(PODOFO_DLL_DEBUG podofo_shared IMPORTED_LOCATION_DEBUG)
@@ -77,7 +77,7 @@ add_custom_command(TARGET ${GUI_NAME} POST_BUILD
 
     COMMENT "Copying all required DLLs to test directory"
 )
-
+#]==]
 
 # 构建后复制QML文件 - 使用正确的路径
 add_custom_command(TARGET meta_wiper_gui POST_BUILD

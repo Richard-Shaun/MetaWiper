@@ -44,7 +44,7 @@ namespace meta_wiper_core {
             file_handler::operation_type op_type,
             const file_handler::operation_options& options = {}
         );
-        std::vector<std::string> get_supported_file_types() const;
+        static std::vector<std::string> get_supported_file_types() ;
         bool type_supported(const std::string& file_type) const;
     };
 
