@@ -20,7 +20,7 @@ Dialog {
     // 确保appInfo对象有默认值，防止初始未设置时出错
     property var appInfo: ({
         title: "MetaWiper",
-        version: "1.0.0",
+        version: "0.1.0",
         description: "A tool for viewing and cleaning file metadata",
         copyright: "© 2025 MetaWiper"
     })
@@ -118,7 +118,7 @@ Dialog {
                 }
 
                 Label {
-                    text: qsTr("• Qt 6.8.3 with QML and Material Design")
+                    text: qsTr("• Qt 6.9.0 with QML and Material Design")
                     wrapMode: Text.Wrap
                     Layout.fillWidth: true
                 }
