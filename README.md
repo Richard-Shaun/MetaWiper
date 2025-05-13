@@ -160,10 +160,11 @@ cmake --build . --config Release
 ## Usage Guide
 
 1. **Launch the application** from the installed location or build directory
-2. **Add files** by clicking the "Add" button or dragging files into the application
+2. **Add files** by clicking the "Add" button
 3. **View metadata** of selected files in the metadata panel
-4. **Clean metadata** by selecting specific fields or using "Clean All" option
-5. **Save cleaned files** with original name (overwrite) or as a new file
+4. **Clean metadata** by selecting specific fields or using "Clean" option
+5. **Export metadata** to a `.json` file
+6. **Save cleaned files** with original name (overwrite) or as a new file
 
 ## Technical Architecture
 
@@ -176,7 +177,7 @@ The core C++ library provides a unified API for metadata operations across multi
 - **Abstraction Layer**: Exposes a single interface for all supported file operations, abstracting away format-specific details.
 - **Processor Factory Pattern**: Dynamically instantiates the appropriate processor (PDF, JPEG, DOCX, etc.) based on file type.
 - **Pluggable Processors**: Each file type is handled by a dedicated processor class, making it easy to add support for new formats.
-- **Operation Framework**: Supports multiple operation types (`READ`, `CLEAN`, `OVERWRITE`, `EXPORT`, `RESTORE`), with consistent error handling and standardized `operation_result` structures (status, messages, metadata, warnings).
+- **Operation Framework**: Supports multiple operation types (`READ`, `CLEAN`, `OVERWRITE`, `EXPORT`), with consistent error handling and standardized `operation_result` structures (status, messages, metadata, warnings).
 - **Batch Processing**: Provides methods for processing multiple files efficiently.
 - **Thread-Safe Design**: Core functions are safe for concurrent use, supporting batch and UI-driven workflows.
 - **Extensibility**: New file formats and operations can be added by implementing new processor classes and registering them with the factory.
@@ -318,21 +319,14 @@ A CLI tool will be provided in future releases, leveraging the same core library
     │   ├── CMakeLists.txt
     │   ├── test_utils.cpp
     │   └── test_utils.h
-    ├── formats/                # Format-specific tests
-    │   ├── jpeg/               # JPEG format tests
-    │   │   ├── CMakeLists.txt
-    │   │   └── jpeg_test.cpp
-    │   └── pdf/                # PDF format tests
-    │       ├── CMakeLists.txt
-    │       └── pdf_test.cpp
-    └── resources/              # Test resources
-        ├── paths.txt           # Resource paths configuration
-        ├── jpeg/               # JPEG test files
-        │   ├── test1_metadata.json
-        │   ├── test1.jpg
-        │   └── test2.jpg
-        └── pdf/                # PDF test files
-            └── test.pdf
+    └── formats/                # Format-specific tests
+        ├── jpeg/               # JPEG format tests
+        │   ├── CMakeLists.txt
+        │   └── jpeg_test.cpp
+        └── pdf/                # PDF format tests
+            ├── CMakeLists.txt
+            └── pdf_test.cpp
+
 ```
 
 This directory structure shows the modular organization of the MetaWiper project:
