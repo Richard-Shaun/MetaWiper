@@ -4,6 +4,7 @@
 [![CMake](https://img.shields.io/badge/CMake-3.15+-blue)](https://cmake.org/)
 [![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://isocpp.org/std/the-standard)
 [![Qt](https://img.shields.io/badge/Qt-6.9.0+-green.svg)](https://www.qt.io/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Richard-Shaun/MetaWiper)
 
 MetaWiper is a privacy-focused C++ project that provides:
 - A modern desktop application for viewing and cleaning metadata from files
@@ -77,11 +78,11 @@ For example, sharing a photo might inadvertently reveal your home location via G
 
 The following table shows the current support status for various operations across different file types:
 
-| File Type | READ<br>(View Metadata) | CLEAN<br>(Remove Metadata) | EXPORT<br>(Save as Copy) | OVERWRITE<br>(Replace Original) |
-|:--------:|:----------------------:|:------------------------:|:---------------------:|:-----------------------------:|
-| **JPEG/JPG** | ✅ | ✅ | ✅ | ✅ |
-| **PDF** | ✅ | 🚧 | 🚧 | 🚧 |
-| **DOCX** | ✅ | 🚧 | 🚧 | 🚧 |
+|  File Type   | READ<br>(View Metadata) | CLEAN<br>(Remove Metadata) | EXPORT<br>(Save as Copy) | OVERWRITE<br>(Replace Original) |
+|:------------:|:-----------------------:|:--------------------------:|:------------------------:|:-------------------------------:|
+| **JPEG/JPG** |            ✅            |             ✅              |            ✅             |                ✅                |
+|   **PDF**    |            ✅            |             🚧             |            🚧            |               🚧                |
+|   **DOCX**   |            ✅            |             🚧             |            🚧            |               🚧                |
 
 ✅ Fully supported &nbsp;&nbsp; 🚧 In development
 
