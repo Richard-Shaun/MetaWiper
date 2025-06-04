@@ -7,5 +7,5 @@
         #define META_WIPER_CORE_EXPORT_FLAG __declspec(dllimport)
     #endif
 #else
-    #define MMETA_WIPER_CORE_EXPORT_FLAG
+    #define META_WIPER_CORE_EXPORT_FLAG
 #endif
